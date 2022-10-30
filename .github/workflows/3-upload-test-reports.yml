@@ -29,30 +29,30 @@ jobs:
     # Reference https://docs.github.com/en/actions/learn-github-actions/contexts
     # Reference https://docs.github.com/en/actions/learn-github-actions/expressions
     if: ${{ !github.event.repository.is_template }}
+    build:
+      # We'll run Ubuntu for performance instead of Mac or Windows
+      runs-on: ubuntu-latest
 
-    # We'll run Ubuntu for performance instead of Mac or Windows
-    runs-on: ubuntu-latest
+      steps:
+        # We'll need to check out the repository so that we can edit the README
+        - name: Checkout
+          uses: actions/checkout@v2
+          with:
+            fetch-depth: 0 # Let's get all the branches
 
-    steps:
-      # We'll need to check out the repository so that we can edit the README
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # Let's get all the branches
+        # Verify the learner added actions/upload-artifact
+        - name: Verify workflow
+          run: ./.github/script/check-file.sh
+          env:
+            FILE: .github/workflows/ci.yml
+            SEARCH: actions/upload-artifact
 
-      # Verify the learner added actions/upload-artifact
-      - name: Verify workflow
-        run: ./.github/script/check-file.sh
-        env:
-          FILE: .github/workflows/ci.yml
-          SEARCH: actions/upload-artifact
-
-      # Update README to close <details id=3> and open <details id=4>
-      # and set STEP to '4'
-      - name: Update to step 4
-        uses: skills/action-update-step@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          from_step: 3
-          to_step: 4
-          branch_name: ci
+        # Update README to close <details id=3> and open <details id=4>
+        # and set STEP to '4'
+        - name: Update to step 4
+          uses: skills/action-update-step@v1
+          with:
+            token: ${{ secrets.GITHUB_TOKEN }}
+            from_step: 3
+            to_step: 4
+            branch_name: ci
